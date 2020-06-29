@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)http://jackgit.github.io/image-editor/index.html -->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>ImageEditor Demo</title>
+    <script src="jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <script>FM.init({ projectId: '5983ee4e9a85353d3ce5222a' })</script>
+    <style>
+      * {
+      margin: 0;
+      padding: 0;
+      font-family: arial;
+      }
+      .center {
+      margin-left: auto;
+      margin-right: auto;
+      width: 8em
+      }
+      #editor {
+      margin-top: 0x;
+      border: 0px white;
+      }
+      #editorb {
+      margin-top: 0px;
+      border: 0px white;
+      }
+      .tool-control {
+      margin-top: 0px;
+      display: flex;
+      }
+      .flex-1 {
+      flex: 1;
+      }
+      .flex-2 {
+      flex: 2;
+      }
+      .flex-3 {
+      flex: 3;
+      }
+      .flex-4 {
+      flex: 4;
+      }
+      #frameList > li {
+      display: inline-block;
+      }
+      .pri-btn {
+      padding: 10px;
+      border-radius: 5px;
+      margin-right: 20px;
+      }
+      #outputs {
+      margin-top: 0px;
+      border-top: 1px dashed grey;
+      }
+    </style>
+    <script src="jquery-3.5.1.min.js"></script>
+    <script src="hammer.min.js"></script>
+    <script src="ImageEditor.js"></script>
+    <script>
+      $(document).ready(function() {
+      	editor = $('#editor').ImageEditor({
+      		imageUrls: [
+      			'./ImageRight.png'
+      		],
+      		width:620,
+      		height:620,
+      		onInitCompleted: function() {
+      			editor.selectImage(0); //sets default layer/image as selected
+      		}
+      	});
+      });
+      
+      function confirmImage() {
+      	var cvs = editor.mergeImage(),
+      		$img = $('<img>');
+      
+      	$img.attr('src', cvs.toDataURL());
+      	//$('#outputs').append($img);
+      	$('#outputs').append($(cvs));
+      }
+      
+           $(document).ready(function() {
+      	editorb = $('#editorb').ImageEditor({
+      		imageUrls: [
+      			'./ImageLeft.png'
+      		],
+      		width:620,
+      		height: 620,
+      		onInitCompleted: function() {
+      			editorb.selectImage(0);
+                         
+      		}
+      	});
+      });
+      
+      function confirmImage() {
+      	var cvs = editorb.mergeImage(),
+      		$img = $('<img>');
+      
+      	$img.attr('src', cvs.toDataURL());
+      	//$('#outputs').append($img);
+      	$('#outputs').append($(cvs));
+      }
+         
+           
+      
+    </script>
+  </head>
+  <body>
+	  <div style="display:flex;flex-wrap: wrap;align-content: center;">
+    <div id="editor" style="float:left;margin:0 0 0 auto; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); overflow: hidden;"></div>
+    <div  id="editorb" style="margin:0 auto 0 0;touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);overflow: hidden;"><span style="left: 0px; top: 0px; box-sizing: border-box; position: relative; z-index: 8; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); transform: translate(5px, -4px) scale(1, 1) rotate(0deg);"></span></div>
+	  </div>
+	<div class="tool-control">
+      <input class="flex-4" type="text" id="picUrl" placeholder="image url">
+      <button class="flex-1" onclick="editor.setImage($(&quot;#picUrl&quot;).val(), 0)">Change Picture</button>
+    </div>
+    <div class="tool-control">
+      <label class="flex-1">ROTATE</label>
+      <input class="flex-2" type="range" min="-180" max="180" id="rotateControl" oninput="editor.rotateImage(this.value);editorb.rotateImage(this.value*-1);">
+    </div>
+    <div class="tool-control">
+      <label class="flex-1">SCALE</label>
+      <input class="flex-2" type="range" id="scaleControl" min="-75" max="75" step=".1" oninput="editor.moveImage(this.value*-.1, 0);editorb.moveImage(this.value*.1,0);">
+    </div>
+	  <div class="tool-control">
+      <label class="flex-1">ZOOM</label>
+      <input class="flex-2" type="range" id="zoomControl" min="0" max="20" step="1" oninput="editor.scaleImage(this.value*0.1);editorb.scaleImage(this.value *0.1);">
+    </div>
+    <div class="tool-control">
+      <button class="pri-btn" onclick="confirmImage()">Confirm</button>
+    </div>
+    <div id="outputs">
+    </div>
+    <script>
+      $(document).ready(function() {
+      	var arrsplit ; 
+      	var replace ;			
+      	var mirror;
+      				setTimeout(function(){      				
+      setTimeout(function() {
+      var observer = new MutationObserver(function(mutations) {
+      
+	  arrsplit = document.getElementsByTagName('span')[0].style.transform.split(/[\(,)px]+/);
+	  replace = arrsplit[7].replace('deg','')
+      mirror= arrsplit[0]+"("+parseFloat(arrsplit[1])*-1+"px"+", "+parseFloat(arrsplit[2])*1+"px"+")"
+      +arrsplit[3]+"("+parseFloat(arrsplit[4])*1+", "+parseFloat(arrsplit[5])*1+")"+
+	  arrsplit[6]+"("+parseFloat(replace)*-1+"deg"+")";
+
+      mutations.forEach(function(mutationRecord) {
+      document.getElementsByTagName('span')[3].style.transform = mirror
+      console.log('style changed!');
+      console.log(document.getElementsByTagName('span')[3].style.transform)
+      console.log(mirror)
+	 
+ 
+      
+      });    
+      });
+      
+      var observer1 = new MutationObserver(function(mutations) {
+      
+      arrsplit = document.getElementsByTagName('span')[3].style.transform.split(/[\(,)px]+/);
+      replace = arrsplit[7].replace('deg','')
+      mirror= arrsplit[0]+"("+parseFloat(arrsplit[1])*-1+"px"+", "+parseFloat(arrsplit[2])*1+"px"+")"
+      +arrsplit[3]+"("+parseFloat(arrsplit[4])*1+", "+parseFloat(arrsplit[5])*1+")"+
+      arrsplit[6]+"("+parseFloat(replace)*-1+"deg"+")";
+      
+      mutations.forEach(function(mutationRecord) {
+      var transform1 = document.getElementsByTagName('span')[3].style.transform;
+      document.getElementsByTagName('span')[0].style.transform = mirror
+      
+      });    
+      });
+      
+      var target = document.getElementsByTagName('span')[0];
+      var target2 = document.getElementsByTagName('span')[3];
+      observer1.observe(target2, { attributes : true, attributeFilter : ['style'] });
+      observer.observe(target, { attributes : true, attributeFilter : ['style'] });
+      },500);
+      },1000)
+      })
+    </script>
+  </body>
+</html>
